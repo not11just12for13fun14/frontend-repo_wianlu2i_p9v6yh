@@ -1,68 +1,50 @@
-function App() {
+import React from 'react'
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
+import { LanguageProvider, useLang } from './context/LanguageContext'
+import { motion, AnimatePresence } from 'framer-motion'
+import { BarChart2, FlaskConical, Home, MapPin, GraduationCap, BookOpenCheck, Link as LinkIcon, Menu, Languages } from 'lucide-react'
+import Overview from './pages/Overview'
+import Research from './pages/Research'
+import Local from './pages/Local'
+import Experiments from './pages/Experiments'
+import Learning from './pages/Learning'
+import Conclusion from './pages/Conclusion'
+import Sources from './pages/Sources'
+import './index.css'
+
+function Navbar() {
+  const { lang, setLang, t } = useLang()
+  const navItem = (to, label, Icon) => (
+    <NavLink to={to} className={({isActive}) => `flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/40 transition ${isActive ? 'bg-white/60 text-ocean' : 'text-ocean/80'}`}>
+      <Icon size={18} />
+      <span className="hidden sm:block">{label}</span>
+    </NavLink>
+  )
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_50%)]"></div>
-
-      <div className="relative min-h-screen flex items-center justify-center p-8">
-        <div className="max-w-2xl w-full">
-          {/* Header with Flames icon */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center mb-6">
-              <img
-                src="/flame-icon.svg"
-                alt="Flames"
-                className="w-24 h-24 drop-shadow-[0_0_25px_rgba(59,130,246,0.5)]"
-              />
-            </div>
-
-            <h1 className="text-5xl font-bold text-white mb-4 tracking-tight">
-              Flames Blue
-            </h1>
-
-            <p className="text-xl text-blue-200 mb-6">
-              Build applications through conversation
-            </p>
-          </div>
-
-          {/* Instructions */}
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 shadow-xl mb-6">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                1
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Describe your idea</h3>
-                <p className="text-blue-200/80 text-sm">Use the chat panel on the left to tell the AI what you want to build</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 mb-6">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                2
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Watch it build</h3>
-                <p className="text-blue-200/80 text-sm">Your app will appear in this preview as the AI generates the code</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                3
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Refine and iterate</h3>
-                <p className="text-blue-200/80 text-sm">Continue the conversation to add features and make changes</p>
-              </div>
+    <div className="sticky top-0 z-50 backdrop-blur-xl bg-white/50 border-b border-white/30">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex items-center justify-between py-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-turquoise to-blue-500 grid place-items-center text-white font-bold">AQ</div>
+            <div className="leading-tight">
+              <div className="font-poppins font-semibold tracking-wide text-ocean">AQUA SYNTHESIS</div>
+              <div className="text-[11px] text-ocean/70">PhysTech Lyceum • Almaty</div>
             </div>
           </div>
-
-          {/* Footer */}
-          <div className="text-center">
-            <p className="text-sm text-blue-300/60">
-              No coding required • Just describe what you want
-            </p>
+          <div className="hidden md:flex items-center gap-1">
+            {navItem('/', t.nav.overview, Home)}
+            {navItem('/research', t.nav.research, BarChart2)}
+            {navItem('/local', t.nav.local, MapPin)}
+            {navItem('/experiments', t.nav.experiments, FlaskConical)}
+            {navItem('/learning', t.nav.learning, GraduationCap)}
+            {navItem('/conclusion', t.nav.conclusion, BookOpenCheck)}
+            {navItem('/sources', t.nav.sources, LinkIcon)}
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="badge" onClick={() => setLang(lang === 'ru' ? 'en' : 'ru')}>
+              <Languages size={16} /> {lang.toUpperCase()}
+            </button>
+            <button className="md:hidden p-2 rounded-lg hover:bg-white/60"><Menu /></button>
           </div>
         </div>
       </div>
@@ -70,4 +52,50 @@ function App() {
   )
 }
 
-export default App
+const pageVariants = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -12 }
+}
+
+function PageContainer({ children }) {
+  return (
+    <motion.main variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35, ease: 'easeInOut' }} className="max-w-6xl mx-auto px-4 py-8">
+      {children}
+    </motion.main>
+  )
+}
+
+function RoutesView() {
+  return (
+    <AnimatePresence mode="wait">
+      <Routes>
+        <Route path="/" element={<PageContainer><Overview /></PageContainer>} />
+        <Route path="/research" element={<PageContainer><Research /></PageContainer>} />
+        <Route path="/local" element={<PageContainer><Local /></PageContainer>} />
+        <Route path="/experiments" element={<PageContainer><Experiments /></PageContainer>} />
+        <Route path="/learning" element={<PageContainer><Learning /></PageContainer>} />
+        <Route path="/conclusion" element={<PageContainer><Conclusion /></PageContainer>} />
+        <Route path="/sources" element={<PageContainer><Sources /></PageContainer>} />
+      </Routes>
+    </AnimatePresence>
+  )
+}
+
+function RootApp() {
+  return (
+    <LanguageProvider>
+      <BrowserRouter>
+        <div className="min-h-screen bg-aqua-gradient bg-flow-lines">
+          <Navbar />
+          <RoutesView />
+          <footer className="mt-8 py-8 text-center text-sm text-ocean/70">
+            © 2025 PhysTech Lyceum • AQUA SYNTHESIS — Абзал (frontend) & Дияр SMM (research)
+          </footer>
+        </div>
+      </BrowserRouter>
+    </LanguageProvider>
+  )
+}
+
+export default RootApp
